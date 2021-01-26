@@ -1,0 +1,99 @@
+\documentclass[tikz,border=10pt]{standalone}
+\usetikzlibrary{positioning,chains,scopes}
+
+\begin{document}
+    \tikzset{
+        mynode/.style={
+            draw,
+            rectangle,
+            align=center,
+            text width=25mm,
+            minimum height=15mm,
+            font=\footnotesize,
+            inner sep=1mm,
+        },
+        mynoderight/.style={
+            draw,
+            rectangle,
+            align=center,
+            text width=15mm,
+            minimum height=15mm,
+            font=\footnotesize,
+            inner sep=1mm,
+        },
+        mylabel/.style={
+            draw,
+            rectangle,
+            align=center,
+            rounded corners,
+            font=\footnotesize\bf,
+            inner sep=1mm,
+            fill=cyan!30,
+            minimum height=20mm
+        },
+        arrow/.style={
+            very thick,
+            ->,
+            >=stealth
+        }
+    }
+
+    \begin{tikzpicture}[
+        node distance=6mm,
+        start chain=1 going below,
+        every join/.style=arrow,
+        ]
+
+        
+        % Chain in the center going below
+        \coordinate[on chain=1] (tc);
+        \node[mynode, on chain=1] (n2)
+            {Records after duplicates removed\\(n=3655)}; % calculate from uniqueness percentage in table and add result of 2nd table 
+        \node[mynode, join, on chain=1] (n3)
+            {Records screened\\(n=3671)}; % same as above (and additional records node)
+        \node[mynode, join, on chain=1] (n4)
+            {Full-text articles analysed\\(n=342)}; % mendeley folders: msc lit. rev. + interesting/not relevant + deleted documents
+        \node[mynode, join, on chain=1] (n5)
+            {Studies included in literature review\\(n=163)}; % total amount in msc. literature review folder mendeley
+        % \node[mynode, join, on chain=1] (n5)
+            % {Studies included in qualitative synthesis\\(n=...)};
+        % \node[mynode, join, on chain=1] (n6)
+            % {Studies included in quantitative synthesis (meta-analysis)\\(n=...)};
+    
+        % Branches to the right
+        \begin{scope}[start chain=going right]
+            \chainin (n3);
+            \node[mynoderight, join, on chain]
+                {Records excluded\\(n=3329)}; % calculate: records screened - full text articles analysed
+            \chainin (n4);
+            \node[mynoderight, join, on chain]
+                {Full-text articles excluded\\(n=179)}; % calculate: full text articles analysed - studies included in lit. rev.
+        \end{scope}
+    
+        % Nodes at the top  
+        \node[mynode, left=4mm of tc, anchor=south east] (n1l)
+            {Records identified through database searching\\(n=4040)}; % from 2 tables total amount
+        \node[mynode, right=4mm of tc, anchor=south west] (n1r)
+            {Additional records identified through other sources\\ (n=16)}; % approximated
+    
+        \coordinate (n2nl) at ([xshift=-10mm]n2.north);
+        % \coordinate (n2nr) at ([xshift= 15mm]n2.north);
+        \coordinate (n1rr) at ([xshift= 0mm]n1r.south);
+        \coordinate (n2n3) at ([yshift= -2.5mm]n2.south);
+        \coordinate (n1rs) at ([yshift= -23.65mm, xshift=0mm]n1r.south);
+        \draw[arrow] (n1l.south -| n2nl) -- (n2nl);
+        % \draw[arrow] (n1r.south -| n2nr) -- (n2nr);
+        \draw[arrow] (n1r.south -| n1rr)-- (n1rs) -- (n2n3);
+    
+        % Labels on the left
+        \begin{scope}[start chain=going below, xshift=-40mm, node distance=8mm]
+            \node[mylabel, minimum width=9mm, minimum height=19mm, yshift=8mm, on chain, inner sep=2pt] {\rotatebox{90}{Identification}};
+            \node[mylabel, minimum width=9mm, minimum height=38mm, yshift=5mm, on chain] {\rotatebox{90}{Screening}};
+            \node[mylabel, minimum width=9mm, minimum height=19mm, yshift=5mm, on chain, inner sep=2pt] {\rotatebox{90}{Eligibility}};
+            \node[mylabel, minimum width=9mm, minimum height=19mm, yshift=5mm, on chain] {\rotatebox{90}{Included}};
+        \end{scope}
+    
+        % Title
+        \node[above=20mm of tc, font=\normalsize\bf] {PRISMA Flow Diagram};
+    \end{tikzpicture}
+\end{document}
